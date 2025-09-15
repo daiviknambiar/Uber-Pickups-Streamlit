@@ -37,6 +37,12 @@ def main():
         st.dataframe(nba_df)
     else:
         st.write("No data found in the 'game_stats' table.")
+    
+    #streamlit selector for player that displays bar chart with x axis pkayer names and y axis point scored
+    players = nba_df['player'].unique()
+    selected_player = st.selectbox("Select a player", players)
+    player_data = nba_df[nba_df['player'] == selected_player]
+    st.bar_chart(player_data.set_index('game_date')['points'])
         
 
     st.title("Uber pickups in NYC!")
