@@ -13,7 +13,7 @@ streamlit_script_local_path = Path(__file__).parent / "streamlit_run.py"
 streamlit_script_remote_path = "/root/streamlit_run.py"
 image = (
     modal.Image.debian_slim(python_version="3.9")
-    .uv_pip_install("streamlit", "supabase", "pandas", "plotly", "python-dotenv")
+    .uv_pip_install("streamlit", "supabase", "pandas", "plotly", "python-dotenv", "matplotlib")
     .env({"FORCE_REBUILD": "true"})  # 🚨 Add this line to force a rebuild
     .add_local_file(streamlit_script_local_path, streamlit_script_remote_path)
 )
@@ -25,7 +25,7 @@ if not streamlit_script_local_path.exists():
     )
 
 @app.function(
-    allow_concurrent_inputs=100,
+    allow_concurrent_inputs=100,secrets=[modal.Secret.from_name("secret-daivik")]
 )
 @modal.web_server(8000)
 def run():
@@ -42,3 +42,6 @@ def run():
     env_vars.update(os.environ)
         
     subprocess.Popen(cmd, shell=True, env=env_vars)
+    
+    
+    
