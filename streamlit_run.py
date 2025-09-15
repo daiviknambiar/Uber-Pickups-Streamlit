@@ -38,12 +38,13 @@ def main():
     else:
         st.write("No data found in the 'game_stats' table.")
     
-    #streamlit selector for player that displays bar chart with x axis pkayer names and y axis point scored
-    players = nba_df['player'].unique()
-    selected_player = st.selectbox("Select a player", players)
-    player_data = nba_df[nba_df['player'] == selected_player]
-    st.bar_chart(player_data.set_index('game_date')['points'])
-        
+    # Streamlit selector for player that displays their points per game visually
+    if response.data:
+        player_names = nba_df["player"].unique()
+        selected_player = st.selectbox("Select a player:", player_names)
+        player_data = nba_df[nba_df["player"] == selected_player]
+        st.subheader(f"Points in game for {selected_player}")
+        st.bar_chart(player_data.set_index("game_date")["points"])
 
     st.title("Uber pickups in NYC!")
 
