@@ -30,7 +30,7 @@ def get_client() -> Client:
 def main():
     supabase = get_client()
     response = supabase.table("game_stats").select("*").execute()
-    st.set_page_config(layout="wide")
+    st.set_page_config(page_title="Daivik Nambiar, DTSC 3601 Streamlit Dashboard)", layout="wide")
 
     st.subheader("NBA Game Stats from Supabase")
     if response.data:
