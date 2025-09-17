@@ -29,7 +29,8 @@ def get_client() -> Client:
 
 def main():
     supabase = get_client()
-    response = supabase.table("game_stats").select("*").limit(5).execute()
+    response = supabase.table("game_stats").select("*").execute()
+    st.set_page_config(layout="wide")
 
     st.subheader("NBA Game Stats from Supabase")
     if response.data:
@@ -38,13 +39,32 @@ def main():
     else:
         st.write("No data found in the 'game_stats' table.")
     
-    # Streamlit selector for player that displays their points per game visually
-    if response.data:
-        player_names = nba_df["player"].unique()
-        selected_player = st.selectbox("Select a player:", player_names)
-        player_data = nba_df[nba_df["player"] == selected_player]
-        st.subheader(f"Points in game for {selected_player}")
-        st.bar_chart(player_data.set_index("game_date")["points"])
+    st.write("Player Points Per Game")
+
+    ppg = (
+    nba_df.groupby("player", as_index=False)["points"]
+      .mean()
+      .rename(columns={"points":"PPG"})
+      .sort_values("PPG", ascending=False)
+      .head(10)
+)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        fig1, ax1 = plt.subplots(figsize=(5,3))
+        ax1.bar(ppg["player"], ppg["PPG"], color="skyblue", edgecolor="black")
+        ax1.set_title("Top 10 Scorers")
+        ax1.set_xticklabels(ppg["player"], rotation=45, ha="right", fontsize=8)
+        ax1.set_ylabel("PPG")
+        ax1.set_xlabel("Player Name")
+        st.pyplot(fig1)
+
+    with col2:
+        fig2, ax2 = plt.subplots(figsize=(5,3))
+        ax2.hist(nba_df["points"].dropna(), bins=10, color="orange", edgecolor="black")
+        ax2.set_title("Points Distribution")
+        st.pyplot(fig2)
 
     st.title("Uber pickups in NYC!")
 
